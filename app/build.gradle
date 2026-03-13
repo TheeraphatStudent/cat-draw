@@ -6,23 +6,39 @@
  */
 
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
 }
 
 repositories {
-    // Use Maven Central for resolving dependencies.
     mavenCentral()
 }
 
+project.ext.lwjglVersion = "3.3.3"
+
+def lwjglNatives = [
+    "natives-windows",
+    "natives-linux"
+]
+
 dependencies {
-    // Use JUnit Jupiter for testing.
     testImplementation libs.junit.jupiter
-
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // This dependency is used by the application.
     implementation libs.guava
+
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-stb"
+    implementation "org.lwjgl:lwjgl-nanovg"
+
+    lwjglNatives.each { nativePlatform ->
+        runtimeOnly "org.lwjgl:lwjgl::$nativePlatform"
+        runtimeOnly "org.lwjgl:lwjgl-glfw::$nativePlatform"
+        runtimeOnly "org.lwjgl:lwjgl-opengl::$nativePlatform"
+        runtimeOnly "org.lwjgl:lwjgl-stb::$nativePlatform"
+        runtimeOnly "org.lwjgl:lwjgl-nanovg::$nativePlatform"
+    }
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

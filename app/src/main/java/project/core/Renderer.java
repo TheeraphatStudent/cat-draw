@@ -16,6 +16,10 @@ import static org.lwjgl.opengl.GL11.*;
 public class Renderer {
     private long nvg;
     private int fontKanit = -1;
+    private int fontKanitMedium = -1;
+    private int fontKanitSemiBold = -1;
+    private int fontKanitBold = -1;
+    private int fontKanitLight = -1;
     private int fontRoboto = -1;
     private int windowWidth;
     private int windowHeight;
@@ -55,14 +59,11 @@ public class Renderer {
     }
 
     private void loadFonts() {
-        try {
-            ByteBuffer kanitData = loadResource("/fonts/Kanit-Regular.ttf");
-            if (kanitData != null) {
-                fontKanit = nvgCreateFontMem(nvg, "kanit", kanitData, false);
-            }
-        } catch (Exception e) {
-            System.err.println("Warning: Could not load Kanit font: " + e.getMessage());
-        }
+        fontKanit = loadFontFromResource("/fonts/Kanit/Kanit-Regular.ttf", "kanit");
+        fontKanitMedium = loadFontFromResource("/fonts/Kanit/Kanit-Medium.ttf", "kanit-medium");
+        fontKanitSemiBold = loadFontFromResource("/fonts/Kanit/Kanit-SemiBold.ttf", "kanit-semibold");
+        fontKanitBold = loadFontFromResource("/fonts/Kanit/Kanit-Bold.ttf", "kanit-bold");
+        fontKanitLight = loadFontFromResource("/fonts/Kanit/Kanit-Light.ttf", "kanit-light");
 
         try {
             ByteBuffer robotoData = loadResource("/fonts/Roboto-Regular.ttf");
@@ -79,9 +80,23 @@ public class Renderer {
                 fontKanit = nvgCreateFont(nvg, "kanit", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
             }
         }
-        if (fontRoboto == -1) {
-            fontRoboto = fontKanit;
+        if (fontKanitMedium == -1) fontKanitMedium = fontKanit;
+        if (fontKanitSemiBold == -1) fontKanitSemiBold = fontKanit;
+        if (fontKanitBold == -1) fontKanitBold = fontKanit;
+        if (fontKanitLight == -1) fontKanitLight = fontKanit;
+        if (fontRoboto == -1) fontRoboto = fontKanit;
+    }
+
+    private int loadFontFromResource(String path, String name) {
+        try {
+            ByteBuffer data = loadResource(path);
+            if (data != null) {
+                return nvgCreateFontMem(nvg, name, data, false);
+            }
+        } catch (Exception e) {
+            System.err.println("Warning: Could not load font " + name + ": " + e.getMessage());
         }
+        return -1;
     }
 
     private ByteBuffer loadResource(String resource) throws IOException {

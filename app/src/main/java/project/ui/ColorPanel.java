@@ -76,9 +76,9 @@ public class ColorPanel {
         currentY += 3 * (swatchSize + swatchPadding) + 16;
 
         nvgFontFace(nvg, "kanit");
-        nvgFontSize(nvg, 14);
+        nvgFontSize(nvg, 12);
         nvgFillColor(nvg, Renderer.COLOR_TEXT_SECONDARY);
-        nvgText(nvg, x + padding, currentY, "Hex");
+        nvgText(nvg, x + padding, currentY, "Hex (display only)");
         currentY += 20;
 
         nvgBeginPath(nvg);
@@ -86,9 +86,13 @@ public class ColorPanel {
         nvgFillColor(nvg, Renderer.COLOR_BACKGROUND);
         nvgFill(nvg);
 
-        nvgFontFace(nvg, "roboto");
-        nvgFontSize(nvg, 16);
-        nvgFillColor(nvg, Renderer.COLOR_TEXT_PRIMARY);
+        nvgStrokeColor(nvg, Renderer.COLOR_TEXT_SECONDARY);
+        nvgStrokeWidth(nvg, 1);
+        nvgStroke(nvg);
+
+        nvgFontFace(nvg, "kanit-medium");
+        nvgFontSize(nvg, 13);
+        nvgFillColor(nvg, Renderer.COLOR_TEXT_SECONDARY);
         nvgTextAlign(nvg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
         nvgText(nvg, x + padding + 8, currentY + 16, "#" + hexInput);
         currentY += 48;

@@ -105,12 +105,5 @@ public class InputHandler {
             windowWidth = width;
             windowHeight = height;
         });
-
-        glfwSetDropCallback(window, (win, count, names) -> {
-            if (count > 0) {
-                String path = GLFWDropCallback.getName(names, 0);
-                System.out.println("Dropped file: " + path);
-            }
-        });
     }
 }

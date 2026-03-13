@@ -24,6 +24,9 @@ public class DrawLayer implements Layer {
         public float r, g, b, a;
         public float size;
         public boolean isLine;
+        public boolean isText = false;
+        public String text = "";
+        public String fontName = "kanit-medium";
 
         public Stroke(float r, float g, float b, float a, float size, boolean isLine) {
             this.r = r;
@@ -85,7 +88,14 @@ public class DrawLayer implements Layer {
 
             nvgRGBAf(stroke.r, stroke.g, stroke.b, stroke.a, color);
 
-            if (stroke.isLine && stroke.points.size() >= 2) {
+            if (stroke.isText && !stroke.points.isEmpty()) {
+                StrokePoint p = stroke.points.get(0);
+                nvgFontFace(nvg, stroke.fontName);
+                nvgFontSize(nvg, stroke.size);
+                nvgFillColor(nvg, color);
+                nvgTextAlign(nvg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+                nvgText(nvg, x + p.x, y + p.y, stroke.text);
+            } else if (stroke.isLine && stroke.points.size() >= 2) {
                 nvgBeginPath(nvg);
                 StrokePoint p0 = stroke.points.get(0);
                 nvgMoveTo(nvg, x + p0.x, y + p0.y);

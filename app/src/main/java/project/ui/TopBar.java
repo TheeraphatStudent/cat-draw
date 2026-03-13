@@ -3,6 +3,12 @@ package project.ui;
 import org.lwjgl.nanovg.NVGColor;
 import project.core.Canvas;
 import project.core.Renderer;
+import project.layers.ImageLayer;
+
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.io.File;
+import java.io.FilenameFilter;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 
@@ -27,8 +33,8 @@ public class TopBar {
         nvgFillColor(nvg, Renderer.COLOR_PANEL);
         nvgFill(nvg);
 
-        nvgFontFace(nvg, "kanit");
-        nvgFontSize(nvg, 24);
+        nvgFontFace(nvg, "kanit-semibold");
+        nvgFontSize(nvg, 18);
         nvgFillColor(nvg, Renderer.COLOR_TEXT_PRIMARY);
         nvgTextAlign(nvg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
         nvgText(nvg, 16, HEIGHT / 2f, "Cat Draw");
@@ -52,8 +58,8 @@ public class TopBar {
         nvgFillColor(nvg, bgColor);
         nvgFill(nvg);
 
-        nvgFontFace(nvg, "roboto");
-        nvgFontSize(nvg, 14);
+        nvgFontFace(nvg, "kanit-medium");
+        nvgFontSize(nvg, 13);
         nvgFillColor(nvg, Renderer.COLOR_TEXT_PRIMARY);
         nvgTextAlign(nvg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
         nvgText(nvg, x + w / 2, y + h / 2, label);
@@ -70,6 +76,7 @@ public class TopBar {
         float uploadX = windowWidth - 180;
         if (mouseX >= uploadX && mouseX <= uploadX + buttonWidth &&
             mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
+            openFileChooser();
             return true;
         }
 
@@ -81,6 +88,39 @@ public class TopBar {
         }
 
         return false;
+    }
+
+    private void openFileChooser() {
+        new Thread(() -> {
+            FileDialog dialog = new FileDialog((Frame) null, "Select Image", FileDialog.LOAD);
+            dialog.setFilenameFilter((dir, name) -> {
+                String lower = name.toLowerCase();
+                return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg");
+            });
+            dialog.setVisible(true);
+            
+            String file = dialog.getFile();
+            String dir = dialog.getDirectory();
+            dialog.dispose();
+            
+            if (file != null && dir != null) {
+                String fullPath = dir + file;
+                loadImage(fullPath);
+            }
+        }).start();
+    }
+
+    private void loadImage(String path) {
+        ImageLayer imageLayer = new ImageLayer();
+        long nvg = renderer.getNvg();
+        
+        if (imageLayer.loadFromFile(nvg, path)) {
+            imageLayer.setPosition(50, 50);
+            canvas.addImageLayer(imageLayer);
+            System.out.println("Image loaded: " + path);
+        } else {
+            System.err.println("Failed to load image: " + path);
+        }
     }
 
     public void handleMouseMove(float mouseX, float mouseY) {

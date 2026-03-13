@@ -166,10 +166,10 @@ Layout:
 
 | # | File | Status | Notes |
 |---|------|--------|-------|
-| 1 | `App.java` | 1 TODO | GLFW window 1280x800, GL context, main loop |
-| 2 | `core/Renderer.java` | 1 TODO | NanoVG init, frame begin/end, font loading |
-| 3 | `core/Canvas.java` | 1 TODO | Layer list, add/remove/render layers |
-| 4 | `core/InputHandler.java` | 1 TODO | All GLFW callbacks wired to ToolManager |
+| 1 | `App.java` | 3 DONE | GLFW window 1280x800, GL context, main loop |
+| 2 | `core/Renderer.java` | 3 DONE | NanoVG init, Kanit font variants loaded, frame begin/end |
+| 3 | `core/Canvas.java` | 3 DONE | Layer list, add/remove/render layers |
+| 4 | `core/InputHandler.java` | 3 DONE | GLFW callbacks, removed drag-drop (using FileDialog) |
 
 ---
 
@@ -177,11 +177,11 @@ Layout:
 
 | # | File | Status | Notes |
 |---|------|--------|-------|
-| 5 | `tools/ToolManager.java` | 1 TODO | Enum{BRUSH,ERASER,LINE,TEXT}, switch logic |
-| 6 | `tools/BrushTool.java` | 1 TODO | Mouse drag → circle stamps at cursor |
-| 7 | `tools/EraserTool.java` | 1 TODO | Hold+drag → red preview → erase on release |
-| 8 | `tools/LineTool.java` | 1 TODO | DDA algorithm → GL_LINES on release |
-| 9 | `tools/TextTool.java` | 1 TODO | Click → input box → resize handles → bake |
+| 5 | `tools/ToolManager.java` | 3 DONE | Enum{BRUSH,ERASER,LINE,TEXT}, switch logic |
+| 6 | `tools/BrushTool.java` | 3 DONE | Mouse drag → circle stamps at cursor |
+| 7 | `tools/EraserTool.java` | 3 DONE | Hold+drag → erase on release |
+| 8 | `tools/LineTool.java` | 3 DONE | DDA algorithm → GL_LINES on release |
+| 9 | `tools/TextTool.java` | 3 DONE | Click canvas → text box → resize handles → bake on ENTER |
 
 ---
 
@@ -189,9 +189,9 @@ Layout:
 
 | # | File | Status | Notes |
 |---|------|--------|-------|
-| 10 | `ui/TopBar.java` | 1 TODO | 48px top: title (Kanit) + Upload + Clear buttons |
-| 11 | `ui/Toolbar.java` | 1 TODO | 60px left: icon buttons per tool, active highlight |
-| 12 | `ui/ColorPanel.java` | 1 TODO | 200px right: hex field + opacity slider + swatch |
+| 10 | `ui/TopBar.java` | 3 DONE | 48px top: title (kanit-semibold) + Upload (FileDialog) + Clear |
+| 11 | `ui/Toolbar.java` | 3 DONE | 60px left: icon buttons per tool, active highlight |
+| 12 | `ui/ColorPanel.java` | 3 DONE | Hex field READ-ONLY, opacity slider, color swatches |
 
 ---
 
@@ -199,9 +199,9 @@ Layout:
 
 | # | File | Status | Notes |
 |---|------|--------|-------|
-| 13 | `layers/Layer.java` | 1 TODO | Interface: render(nvg), getType() |
-| 14 | `layers/DrawLayer.java` | 1 TODO | Stores stroke list, renders via OpenGL |
-| 15 | `layers/ImageLayer.java` | 1 TODO | STB load → GL texture → draggable quad |
+| 13 | `layers/Layer.java` | 3 DONE | Interface: render(nvg), getType() |
+| 14 | `layers/DrawLayer.java` | 3 DONE | Strokes + text support, renders via NanoVG |
+| 15 | `layers/ImageLayer.java` | 3 DONE | STB load → NanoVG image → positioned quad |
 
 ---
 
@@ -209,10 +209,10 @@ Layout:
 
 ```
 Total:       15 tasks
-- Done:      0
+- Done:      15
 - In Progress: 0
 - Blocked:   0
-- Remaining: 15
+- Remaining: 0
 ```
 
 ---
@@ -230,8 +230,12 @@ When completing a task, update this file by:
 
 ## Agent Update Log
 
-<!-- Agent appends a new entry here after each file is completed -->
-
 | Timestamp | File | Status | Agent Note |
 |-----------|------|--------|------------|
-| — | — | — | No updates yet |
+| 2026-03-13 | All 15 files | 3 DONE | Initial implementation complete |
+| 2026-03-13 | `ui/ColorPanel.java` | 3 DONE | CHANGE 1: Hex field now read-only (display only) |
+| 2026-03-13 | `tools/TextTool.java` | 3 DONE | CHANGE 2: Click canvas to place text, resize handles, bake on ENTER |
+| 2026-03-13 | `layers/DrawLayer.java` | 3 DONE | Added text stroke support for TextTool |
+| 2026-03-13 | `ui/TopBar.java` | 3 DONE | CHANGE 3: Upload uses FileDialog instead of drag-drop |
+| 2026-03-13 | `core/InputHandler.java` | 3 DONE | Removed glfwSetDropCallback |
+| 2026-03-13 | `core/Renderer.java` | 3 DONE | Loaded Kanit font variants (regular, medium, semibold, bold, light) |

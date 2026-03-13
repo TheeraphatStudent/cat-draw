@@ -259,3 +259,6 @@ When completing a task, update this file by:
 | 2026-03-13 | `layers/DrawLayer.java` | 3 DONE | BUG 4 FIX: Added isFill stroke type and createFillStroke method |
 | 2026-03-13 | `tools/EraserTool.java` | 3 DONE | BUG 5 FIX: Remove ImageLayers when eraser touches them |
 | 2026-03-13 | `tools/ToolManager.java` | 3 DONE | FEATURE 1: Add MIN/MAX_BRUSH_SIZE constants, clamp in setter |
+| 2026-03-13 | `ui/ColorPanel.java` | 3 DONE | FEATURE 1: Brush size section with input field, slider, preview circle |
+| 2026-03-13 | `core/Canvas.java` | 3 DONE | FEATURE 2: Add backgroundColor property with getter/setter |
+| 2026-03-13 | `tools/BucketTool.java` | 3 DONE | FEATURE 2: Case A/B logic - background vs stroke fill |

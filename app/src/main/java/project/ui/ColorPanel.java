@@ -21,6 +21,12 @@ public class ColorPanel {
     private boolean hexInputValid = true;
     private float hexFieldX, hexFieldY, hexFieldWidth, hexFieldHeight;
 
+    private boolean brushSizeFieldFocused = false;
+    private StringBuilder brushSizeInputBuffer = new StringBuilder("8");
+    private boolean draggingBrushSize = false;
+    private float brushSizeFieldX, brushSizeFieldY, brushSizeFieldWidth, brushSizeFieldHeight;
+    private float brushSizeSliderX, brushSizeSliderY, brushSizeSliderWidth, brushSizeSliderHeight;
+
     private static final String[] PRESET_COLORS = {
         "#FFFFFF", "#000000", "#FF0000", "#00FF00",
         "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF",
@@ -119,6 +125,10 @@ public class ColorPanel {
         nvgText(nvg, hexFieldX + 8, hexFieldY + hexFieldHeight / 2, displayText);
         currentY += 48;
 
+        if (toolManager.getActiveTool() == ToolManager.Tool.BRUSH) {
+            currentY = renderBrushSizeSection(nvg, x, currentY, padding);
+        }
+
         nvgFontFace(nvg, FontRegistry.getFont("Kanit-Regular"));
         nvgFontSize(nvg, 14);
         nvgFillColor(nvg, Renderer.COLOR_TEXT_SECONDARY);
@@ -174,6 +184,93 @@ public class ColorPanel {
         nvgStroke(nvg);
     }
 
+    private float renderBrushSizeSection(long nvg, float x, float currentY, float padding) {
+        nvgFontFace(nvg, FontRegistry.getFont("Kanit-Regular"));
+        nvgFontSize(nvg, 14);
+        nvgFillColor(nvg, Renderer.COLOR_TEXT_SECONDARY);
+        nvgTextAlign(nvg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+        nvgText(nvg, x + padding, currentY, "Brush Size");
+        currentY += 20;
+
+        brushSizeFieldX = x + padding;
+        brushSizeFieldY = currentY;
+        brushSizeFieldWidth = WIDTH - padding * 2;
+        brushSizeFieldHeight = 32;
+
+        nvgBeginPath(nvg);
+        nvgRoundedRect(nvg, brushSizeFieldX, brushSizeFieldY, brushSizeFieldWidth, brushSizeFieldHeight, 4);
+        nvgFillColor(nvg, Renderer.COLOR_BACKGROUND);
+        nvgFill(nvg);
+
+        NVGColor borderColor = NVGColor.create();
+        if (brushSizeFieldFocused) {
+            nvgRGBA((byte) 0x6C, (byte) 0x63, (byte) 0xFF, (byte) 0xFF, borderColor);
+        } else {
+            nvgRGBA((byte) 0xAA, (byte) 0xAA, (byte) 0xCC, (byte) 0xFF, borderColor);
+        }
+        nvgStrokeColor(nvg, borderColor);
+        nvgStrokeWidth(nvg, brushSizeFieldFocused ? 2 : 1);
+        nvgStroke(nvg);
+
+        nvgFontFace(nvg, FontRegistry.getFont("Kanit-Medium"));
+        nvgFontSize(nvg, 13);
+        nvgFillColor(nvg, Renderer.COLOR_TEXT_PRIMARY);
+        nvgTextAlign(nvg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+        String sizeText = brushSizeFieldFocused ? brushSizeInputBuffer.toString() + "|" : String.valueOf((int) toolManager.getBrushSize());
+        nvgText(nvg, brushSizeFieldX + 8, brushSizeFieldY + brushSizeFieldHeight / 2, sizeText + " px");
+        currentY += 40;
+
+        brushSizeSliderX = x + padding;
+        brushSizeSliderY = currentY;
+        brushSizeSliderWidth = WIDTH - padding * 2;
+        brushSizeSliderHeight = 8;
+
+        nvgBeginPath(nvg);
+        nvgRoundedRect(nvg, brushSizeSliderX, brushSizeSliderY, brushSizeSliderWidth, brushSizeSliderHeight, 4);
+        nvgFillColor(nvg, Renderer.COLOR_BACKGROUND);
+        nvgFill(nvg);
+
+        float sizeRatio = (toolManager.getBrushSize() - ToolManager.MIN_BRUSH_SIZE) / 
+                          (ToolManager.MAX_BRUSH_SIZE - ToolManager.MIN_BRUSH_SIZE);
+        nvgBeginPath(nvg);
+        nvgRoundedRect(nvg, brushSizeSliderX, brushSizeSliderY, brushSizeSliderWidth * sizeRatio, brushSizeSliderHeight, 4);
+        nvgFillColor(nvg, Renderer.COLOR_ACCENT);
+        nvgFill(nvg);
+
+        float knobX = brushSizeSliderX + brushSizeSliderWidth * sizeRatio;
+        nvgBeginPath(nvg);
+        nvgCircle(nvg, knobX, brushSizeSliderY + brushSizeSliderHeight / 2, 8);
+        nvgFillColor(nvg, Renderer.COLOR_WHITE);
+        nvgFill(nvg);
+        currentY += 24;
+
+        nvgFontFace(nvg, FontRegistry.getFont("Kanit-Regular"));
+        nvgFontSize(nvg, 12);
+        nvgFillColor(nvg, Renderer.COLOR_TEXT_SECONDARY);
+        nvgTextAlign(nvg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+        nvgText(nvg, x + padding, currentY, String.format("%d px", (int) toolManager.getBrushSize()));
+        currentY += 24;
+
+        float previewSize = Math.min(toolManager.getBrushSize(), 80);
+        float previewCenterX = x + WIDTH / 2;
+        float previewCenterY = currentY + 40;
+
+        NVGColor previewColor = NVGColor.create();
+        Renderer.hexColor("#" + hexInput, opacity, previewColor);
+
+        nvgBeginPath(nvg);
+        nvgCircle(nvg, previewCenterX, previewCenterY, previewSize / 2);
+        nvgFillColor(nvg, previewColor);
+        nvgFill(nvg);
+
+        nvgStrokeColor(nvg, Renderer.COLOR_TEXT_SECONDARY);
+        nvgStrokeWidth(nvg, 1);
+        nvgStroke(nvg);
+
+        currentY += 88;
+        return currentY;
+    }
+
     public boolean handleClick(float mouseX, float mouseY, int windowWidth, int windowHeight) {
         float x = windowWidth - WIDTH;
         if (mouseX < x || mouseY < TopBar.HEIGHT) return false;
@@ -204,12 +301,37 @@ public class ColorPanel {
         if (mouseX >= x + padding && mouseX <= x + WIDTH - padding &&
             mouseY >= hexFieldYPos && mouseY <= hexFieldYPos + 32) {
             hexFieldFocused = true;
+            brushSizeFieldFocused = false;
             return true;
         } else {
             hexFieldFocused = false;
         }
 
         currentY += 3 * (swatchSize + swatchPadding) + 16 + 20 + 48;
+
+        if (toolManager.getActiveTool() == ToolManager.Tool.BRUSH) {
+            if (mouseX >= brushSizeFieldX && mouseX <= brushSizeFieldX + brushSizeFieldWidth &&
+                mouseY >= brushSizeFieldY && mouseY <= brushSizeFieldY + brushSizeFieldHeight) {
+                brushSizeFieldFocused = true;
+                hexFieldFocused = false;
+                brushSizeInputBuffer = new StringBuilder(String.valueOf((int) toolManager.getBrushSize()));
+                return true;
+            } else {
+                if (brushSizeFieldFocused) {
+                    applyBrushSizeInput();
+                }
+                brushSizeFieldFocused = false;
+            }
+
+            if (mouseY >= brushSizeSliderY - 8 && mouseY <= brushSizeSliderY + brushSizeSliderHeight + 8 &&
+                mouseX >= brushSizeSliderX && mouseX <= brushSizeSliderX + brushSizeSliderWidth) {
+                draggingBrushSize = true;
+                updateBrushSizeFromSlider(mouseX);
+                return true;
+            }
+
+            currentY += 176;
+        }
 
         float sliderY = currentY;
         float sliderWidth = WIDTH - padding * 2;
@@ -231,15 +353,35 @@ public class ColorPanel {
             float sliderWidth = WIDTH - padding * 2;
             updateOpacity(mouseX, x + padding, sliderWidth);
         }
+        if (draggingBrushSize) {
+            updateBrushSizeFromSlider(mouseX);
+        }
     }
 
     public void handleRelease() {
         draggingOpacity = false;
+        draggingBrushSize = false;
     }
 
     private void updateOpacity(float mouseX, float sliderX, float sliderWidth) {
         opacity = Math.max(0, Math.min(1, (mouseX - sliderX) / sliderWidth));
         toolManager.setOpacity(opacity);
+    }
+
+    private void updateBrushSizeFromSlider(float mouseX) {
+        float ratio = Math.max(0, Math.min(1, (mouseX - brushSizeSliderX) / brushSizeSliderWidth));
+        float size = ToolManager.MIN_BRUSH_SIZE + ratio * (ToolManager.MAX_BRUSH_SIZE - ToolManager.MIN_BRUSH_SIZE);
+        toolManager.setBrushSize(size);
+        brushSizeInputBuffer = new StringBuilder(String.valueOf((int) toolManager.getBrushSize()));
+    }
+
+    private void applyBrushSizeInput() {
+        try {
+            int size = Integer.parseInt(brushSizeInputBuffer.toString().trim());
+            toolManager.setBrushSize(size);
+        } catch (NumberFormatException e) {
+            brushSizeInputBuffer = new StringBuilder(String.valueOf((int) toolManager.getBrushSize()));
+        }
     }
 
     public boolean isInBounds(float mouseX, float mouseY, int windowWidth) {
@@ -258,45 +400,60 @@ public class ColorPanel {
     }
 
     public boolean isHexFieldFocused() {
-        return hexFieldFocused;
+        return hexFieldFocused || brushSizeFieldFocused;
     }
 
     public void unfocusHexField() {
         hexFieldFocused = false;
+        brushSizeFieldFocused = false;
     }
 
     public void onKeyTyped(char c) {
-        if (!hexFieldFocused) return;
-        
-        if (isValidHexChar(c) && hexInputBuffer.length() < 8) {
-            hexInputBuffer.append(Character.toUpperCase(c));
-            validateAndApplyHex();
+        if (hexFieldFocused) {
+            if (isValidHexChar(c) && hexInputBuffer.length() < 8) {
+                hexInputBuffer.append(Character.toUpperCase(c));
+                validateAndApplyHex();
+            }
+        } else if (brushSizeFieldFocused) {
+            if (c >= '0' && c <= '9' && brushSizeInputBuffer.length() < 3) {
+                brushSizeInputBuffer.append(c);
+            }
         }
     }
 
     public void onKeyPressed(int key) {
-        if (!hexFieldFocused) return;
-        
-        if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE && hexInputBuffer.length() > 0) {
-            hexInputBuffer.deleteCharAt(hexInputBuffer.length() - 1);
-            validateAndApplyHex();
-        } else if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER) {
-            if (hexInputValid && hexInputBuffer.length() >= 3) {
-                hexInput = normalizeHex(hexInputBuffer.toString());
+        if (hexFieldFocused) {
+            if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE && hexInputBuffer.length() > 0) {
+                hexInputBuffer.deleteCharAt(hexInputBuffer.length() - 1);
+                validateAndApplyHex();
+            } else if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER) {
+                if (hexInputValid && hexInputBuffer.length() >= 3) {
+                    hexInput = normalizeHex(hexInputBuffer.toString());
+                    hexInputBuffer = new StringBuilder(hexInput);
+                    toolManager.setActiveColor("#" + hexInput);
+                }
+                hexFieldFocused = false;
+            } else if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
                 hexInputBuffer = new StringBuilder(hexInput);
-                toolManager.setActiveColor("#" + hexInput);
+                hexInputValid = true;
+                hexFieldFocused = false;
+            } else if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_V && 
+                       (org.lwjgl.glfw.GLFW.glfwGetKey(org.lwjgl.glfw.GLFW.glfwGetCurrentContext(), 
+                        org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL) == org.lwjgl.glfw.GLFW.GLFW_PRESS ||
+                        org.lwjgl.glfw.GLFW.glfwGetKey(org.lwjgl.glfw.GLFW.glfwGetCurrentContext(), 
+                        org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_CONTROL) == org.lwjgl.glfw.GLFW.GLFW_PRESS)) {
+                pasteFromClipboard();
             }
-            hexFieldFocused = false;
-        } else if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
-            hexInputBuffer = new StringBuilder(hexInput);
-            hexInputValid = true;
-            hexFieldFocused = false;
-        } else if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_V && 
-                   (org.lwjgl.glfw.GLFW.glfwGetKey(org.lwjgl.glfw.GLFW.glfwGetCurrentContext(), 
-                    org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL) == org.lwjgl.glfw.GLFW.GLFW_PRESS ||
-                    org.lwjgl.glfw.GLFW.glfwGetKey(org.lwjgl.glfw.GLFW.glfwGetCurrentContext(), 
-                    org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_CONTROL) == org.lwjgl.glfw.GLFW.GLFW_PRESS)) {
-            pasteFromClipboard();
+        } else if (brushSizeFieldFocused) {
+            if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE && brushSizeInputBuffer.length() > 0) {
+                brushSizeInputBuffer.deleteCharAt(brushSizeInputBuffer.length() - 1);
+            } else if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER) {
+                applyBrushSizeInput();
+                brushSizeFieldFocused = false;
+            } else if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+                brushSizeInputBuffer = new StringBuilder(String.valueOf((int) toolManager.getBrushSize()));
+                brushSizeFieldFocused = false;
+            }
         }
     }
 

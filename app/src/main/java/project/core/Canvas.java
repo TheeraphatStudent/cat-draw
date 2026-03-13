@@ -14,11 +14,14 @@ public class Canvas {
     private final Renderer renderer;
     private final List<Layer> layers = new ArrayList<>();
     private DrawLayer activeDrawLayer;
+    private final NVGColor backgroundColor = NVGColor.create();
+    private float bgR = 1.0f, bgG = 1.0f, bgB = 1.0f, bgA = 1.0f;
 
     public Canvas(Renderer renderer) {
         this.renderer = renderer;
         activeDrawLayer = new DrawLayer();
         layers.add(activeDrawLayer);
+        nvgRGBAf(bgR, bgG, bgB, bgA, backgroundColor);
     }
 
     public void render(int x, int y, int width, int height) {
@@ -28,7 +31,8 @@ public class Canvas {
 
         nvgBeginPath(nvg);
         nvgRect(nvg, x, y, width, height);
-        nvgFillColor(nvg, Renderer.COLOR_CANVAS_BG);
+        nvgRGBAf(bgR, bgG, bgB, bgA, backgroundColor);
+        nvgFillColor(nvg, backgroundColor);
         nvgFill(nvg);
 
         for (Layer layer : layers) {
@@ -54,6 +58,28 @@ public class Canvas {
         layers.clear();
         activeDrawLayer = new DrawLayer();
         layers.add(activeDrawLayer);
+        bgR = 1.0f;
+        bgG = 1.0f;
+        bgB = 1.0f;
+        bgA = 1.0f;
+    }
+
+    public void setBackgroundColor(float r, float g, float b, float a) {
+        this.bgR = r;
+        this.bgG = g;
+        this.bgB = b;
+        this.bgA = a;
+    }
+
+    public float[] getBackgroundColor() {
+        return new float[]{bgR, bgG, bgB, bgA};
+    }
+
+    public boolean isBackgroundColor(float r, float g, float b) {
+        float tolerance = 0.01f;
+        return Math.abs(bgR - r) < tolerance && 
+               Math.abs(bgG - g) < tolerance && 
+               Math.abs(bgB - b) < tolerance;
     }
 
     public void addImageLayer(ImageLayer imageLayer) {

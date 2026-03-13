@@ -41,10 +41,9 @@ public class InputHandler {
             if (mouseDown) {
                 if (colorPanel.isInBounds((float) xpos, (float) ypos, windowWidth)) {
                     colorPanel.handleDrag((float) xpos, (float) ypos, windowWidth);
-                } else if (!toolbar.isInBounds((float) xpos, (float) ypos) &&
-                           !topBar.isInBounds((float) xpos, (float) ypos)) {
-                    float canvasX = (float) xpos - Toolbar.WIDTH;
-                    float canvasY = (float) ypos - TopBar.HEIGHT;
+                } else if (Layout.isInCanvas((float) xpos, (float) ypos, windowWidth, windowHeight)) {
+                    float canvasX = Layout.toCanvasX((float) xpos);
+                    float canvasY = Layout.toCanvasY((float) ypos);
                     toolManager.onMouseDrag(canvas, canvasX, canvasY);
                 }
             }
@@ -67,20 +66,18 @@ public class InputHandler {
                         return;
                     }
 
-                    if (mouseX > Toolbar.WIDTH && mouseX < windowWidth - ColorPanel.WIDTH &&
-                        mouseY > TopBar.HEIGHT) {
-                        float canvasX = (float) mouseX - Toolbar.WIDTH;
-                        float canvasY = (float) mouseY - TopBar.HEIGHT;
+                    if (Layout.isInCanvas((float) mouseX, (float) mouseY, windowWidth, windowHeight)) {
+                        float canvasX = Layout.toCanvasX((float) mouseX);
+                        float canvasY = Layout.toCanvasY((float) mouseY);
                         toolManager.onMouseDown(canvas, canvasX, canvasY);
                     }
                 } else if (action == GLFW_RELEASE) {
                     mouseDown = false;
                     colorPanel.handleRelease();
 
-                    if (mouseX > Toolbar.WIDTH && mouseX < windowWidth - ColorPanel.WIDTH &&
-                        mouseY > TopBar.HEIGHT) {
-                        float canvasX = (float) mouseX - Toolbar.WIDTH;
-                        float canvasY = (float) mouseY - TopBar.HEIGHT;
+                    if (Layout.isInCanvas((float) mouseX, (float) mouseY, windowWidth, windowHeight)) {
+                        float canvasX = Layout.toCanvasX((float) mouseX);
+                        float canvasY = Layout.toCanvasY((float) mouseY);
                         toolManager.onMouseUp(canvas, canvasX, canvasY);
                     }
                 }

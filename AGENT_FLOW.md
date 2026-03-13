@@ -250,3 +250,12 @@ When completing a task, update this file by:
 | 2026-03-13 | `tools/ToolManager.java` | 3 DONE | Added BUCKET and SELECT to Tool enum |
 | 2026-03-13 | `ui/Toolbar.java` | 3 DONE | Icon rendering with fallback, active tool indicator strip |
 | 2026-03-13 | `App.java` | 3 DONE | Pass windowWidth to Toolbar.render() |
+| 2026-03-13 | `core/Layout.java` | 3 DONE | NEW: Coordinate constants for TOPBAR, TOOLBAR, COLOR_PANEL |
+| 2026-03-13 | `App.java` | 3 DONE | BUG 1 FIX: Proper GL clear, pixel ratio, viewport every frame |
+| 2026-03-13 | `tools/BrushTool.java` | 3 DONE | BUG 2 FIX: Interpolate points between mouse events for smooth strokes |
+| 2026-03-13 | `layers/ImageLayer.java` | 3 DONE | BUG 3 FIX: NVG_IMAGE_GENERATE_MIPMAPS flag, better error logging |
+| 2026-03-13 | `core/InputHandler.java` | 3 DONE | BUG 4 FIX: Use Layout constants for coordinate transforms |
+| 2026-03-13 | `tools/BucketTool.java` | 3 DONE | BUG 4 FIX: Simplified to fill rectangle with debug logging |
+| 2026-03-13 | `layers/DrawLayer.java` | 3 DONE | BUG 4 FIX: Added isFill stroke type and createFillStroke method |
+| 2026-03-13 | `tools/EraserTool.java` | 3 DONE | BUG 5 FIX: Remove ImageLayers when eraser touches them |
+| 2026-03-13 | `tools/ToolManager.java` | 3 DONE | FEATURE 1: Add MIN/MAX_BRUSH_SIZE constants, clamp in setter |

@@ -87,8 +87,13 @@ public class ToolManager {
         }
     }
 
+    public static final float MIN_BRUSH_SIZE = 1.0f;
+    public static final float MAX_BRUSH_SIZE = 128.0f;
+
     public float getBrushSize() { return brushSize; }
-    public void setBrushSize(float size) { this.brushSize = size; }
+    public void setBrushSize(float size) { 
+        this.brushSize = Math.max(MIN_BRUSH_SIZE, Math.min(MAX_BRUSH_SIZE, size)); 
+    }
 
     public float getEraserSize() { return eraserSize; }
     public void setEraserSize(float size) { this.eraserSize = size; }

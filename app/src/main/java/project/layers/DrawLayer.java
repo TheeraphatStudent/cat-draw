@@ -26,6 +26,8 @@ public class DrawLayer implements Layer {
         public float size;
         public boolean isLine;
         public boolean isText = false;
+        public boolean isFill = false;
+        public float fillX, fillY, fillW, fillH;
         public String text = "";
         public String fontName = "Kanit-Medium";
 
@@ -58,6 +60,17 @@ public class DrawLayer implements Layer {
         return stroke;
     }
 
+    public Stroke createFillStroke(float r, float g, float b, float a, float x, float y, float w, float h) {
+        Stroke stroke = new Stroke(r, g, b, a, 0, false);
+        stroke.isFill = true;
+        stroke.fillX = x;
+        stroke.fillY = y;
+        stroke.fillW = w;
+        stroke.fillH = h;
+        strokes.add(0, stroke);
+        return stroke;
+    }
+
     public void eraseAt(float x, float y, float radius) {
         float rx = x - radius;
         float ry = y - radius;
@@ -85,9 +98,17 @@ public class DrawLayer implements Layer {
         nvgScissor(nvg, x, y, width, height);
 
         for (Stroke stroke : strokes) {
-            if (stroke.points.isEmpty()) continue;
-
             nvgRGBAf(stroke.r, stroke.g, stroke.b, stroke.a, color);
+
+            if (stroke.isFill) {
+                nvgBeginPath(nvg);
+                nvgRect(nvg, x + stroke.fillX, y + stroke.fillY, stroke.fillW, stroke.fillH);
+                nvgFillColor(nvg, color);
+                nvgFill(nvg);
+                continue;
+            }
+
+            if (stroke.points.isEmpty()) continue;
 
             if (stroke.isText && !stroke.points.isEmpty()) {
                 StrokePoint p = stroke.points.get(0);

@@ -34,16 +34,22 @@ public class ImageLayer implements Layer {
                 
                 ByteBuffer imageData = STBImage.stbi_load_from_memory(fileBuffer, w, h, comp, 4);
                 if (imageData != null) {
-                    imageHandle = nvgCreateImageRGBA(nvg, w.get(0), h.get(0), 0, imageData);
+                    int imgW = w.get(0);
+                    int imgH = h.get(0);
+                    
+                    imageHandle = nvgCreateImageRGBA(nvg, imgW, imgH, NVG_IMAGE_GENERATE_MIPMAPS, imageData);
                     STBImage.stbi_image_free(imageData);
                     
-                    if (imageHandle != 0) {
-                        originalWidth = w.get(0);
-                        originalHeight = h.get(0);
+                    if (imageHandle > 0) {
+                        originalWidth = imgW;
+                        originalHeight = imgH;
                         width = originalWidth;
                         height = originalHeight;
                         loaded = true;
+                        System.out.println("Image loaded: " + imgW + "x" + imgH + " handle=" + imageHandle);
                         return true;
+                    } else {
+                        System.err.println("nvgCreateImageRGBA failed, handle=" + imageHandle);
                     }
                 } else {
                     System.err.println("STB failed to decode image: " + STBImage.stbi_failure_reason());
@@ -63,12 +69,15 @@ public class ImageLayer implements Layer {
 
             ByteBuffer image = STBImage.stbi_load_from_memory(data, w, h, comp, 4);
             if (image != null) {
-                imageHandle = nvgCreateImageRGBA(nvg, w.get(0), h.get(0), 0, image);
+                int imgW = w.get(0);
+                int imgH = h.get(0);
+                
+                imageHandle = nvgCreateImageRGBA(nvg, imgW, imgH, NVG_IMAGE_GENERATE_MIPMAPS, image);
                 STBImage.stbi_image_free(image);
 
-                if (imageHandle != 0) {
-                    originalWidth = w.get(0);
-                    originalHeight = h.get(0);
+                if (imageHandle > 0) {
+                    originalWidth = imgW;
+                    originalHeight = imgH;
                     width = originalWidth;
                     height = originalHeight;
                     loaded = true;

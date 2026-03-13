@@ -8,6 +8,7 @@ import project.core.Canvas;
 import project.core.InputHandler;
 import project.core.Renderer;
 import project.tools.ToolManager;
+import project.core.Layout;
 import project.ui.ColorPanel;
 import project.ui.Toolbar;
 import project.ui.TopBar;
@@ -116,18 +117,21 @@ public class App {
     }
 
     private void loop() {
-        glClearColor(0.118f, 0.118f, 0.180f, 1.0f);
-
         while (!glfwWindowShouldClose(window)) {
+            updateFramebufferSize();
+
+            glViewport(0, 0, framebufferWidth, framebufferHeight);
+            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-            float pixelRatio = (float) framebufferWidth / windowWidth;
+            float pixelRatio = (float) framebufferWidth / (float) windowWidth;
             renderer.beginFrame(windowWidth, windowHeight, pixelRatio);
 
-            int canvasX = Toolbar.WIDTH;
-            int canvasY = TopBar.HEIGHT;
-            int canvasWidth = windowWidth - Toolbar.WIDTH - ColorPanel.WIDTH;
-            int canvasHeight = windowHeight - TopBar.HEIGHT;
+            int canvasX = Layout.getCanvasX();
+            int canvasY = Layout.getCanvasY();
+            int canvasWidth = Layout.getCanvasWidth(windowWidth);
+            int canvasHeight = Layout.getCanvasHeight(windowHeight);
+            canvas.setSize(canvasWidth, canvasHeight);
             canvas.render(canvasX, canvasY, canvasWidth, canvasHeight);
 
             topBar.render(windowWidth);
@@ -149,6 +153,21 @@ public class App {
         GLFWErrorCallback cb = glfwSetErrorCallback(null);
         if (cb != null) {
             cb.free();
+        }
+    }
+
+    private void updateFramebufferSize() {
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer fbW = stack.mallocInt(1);
+            IntBuffer fbH = stack.mallocInt(1);
+            IntBuffer winW = stack.mallocInt(1);
+            IntBuffer winH = stack.mallocInt(1);
+            glfwGetFramebufferSize(window, fbW, fbH);
+            glfwGetWindowSize(window, winW, winH);
+            framebufferWidth = fbW.get(0);
+            framebufferHeight = fbH.get(0);
+            windowWidth = winW.get(0);
+            windowHeight = winH.get(0);
         }
     }
 

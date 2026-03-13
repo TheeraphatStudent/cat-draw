@@ -1,6 +1,7 @@
 package project.layers;
 
 import org.lwjgl.nanovg.NVGColor;
+import project.core.FontRegistry;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,7 +27,7 @@ public class DrawLayer implements Layer {
         public boolean isLine;
         public boolean isText = false;
         public String text = "";
-        public String fontName = "kanit-medium";
+        public String fontName = "Kanit-Medium";
 
         public Stroke(float r, float g, float b, float a, float size, boolean isLine) {
             this.r = r;
@@ -90,7 +91,7 @@ public class DrawLayer implements Layer {
 
             if (stroke.isText && !stroke.points.isEmpty()) {
                 StrokePoint p = stroke.points.get(0);
-                nvgFontFace(nvg, stroke.fontName);
+                nvgFontFace(nvg, FontRegistry.getFont(stroke.fontName));
                 nvgFontSize(nvg, stroke.size);
                 nvgFillColor(nvg, color);
                 nvgTextAlign(nvg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);

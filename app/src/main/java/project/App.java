@@ -131,7 +131,7 @@ public class App {
             canvas.render(canvasX, canvasY, canvasWidth, canvasHeight);
 
             topBar.render(windowWidth);
-            toolbar.render(windowHeight);
+            toolbar.render(windowHeight, windowWidth);
             colorPanel.render(windowWidth, windowHeight);
 
             renderer.endFrame();

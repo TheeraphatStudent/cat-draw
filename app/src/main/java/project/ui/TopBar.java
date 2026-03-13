@@ -2,6 +2,7 @@ package project.ui;
 
 import org.lwjgl.nanovg.NVGColor;
 import project.core.Canvas;
+import project.core.FontRegistry;
 import project.core.Renderer;
 import project.layers.ImageLayer;
 
@@ -33,7 +34,7 @@ public class TopBar {
         nvgFillColor(nvg, Renderer.COLOR_PANEL);
         nvgFill(nvg);
 
-        nvgFontFace(nvg, "kanit-semibold");
+        nvgFontFace(nvg, FontRegistry.getFont("Kanit-SemiBold"));
         nvgFontSize(nvg, 18);
         nvgFillColor(nvg, Renderer.COLOR_TEXT_PRIMARY);
         nvgTextAlign(nvg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
@@ -58,7 +59,7 @@ public class TopBar {
         nvgFillColor(nvg, bgColor);
         nvgFill(nvg);
 
-        nvgFontFace(nvg, "kanit-medium");
+        nvgFontFace(nvg, FontRegistry.getFont("Kanit-Medium"));
         nvgFontSize(nvg, 13);
         nvgFillColor(nvg, Renderer.COLOR_TEXT_PRIMARY);
         nvgTextAlign(nvg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);

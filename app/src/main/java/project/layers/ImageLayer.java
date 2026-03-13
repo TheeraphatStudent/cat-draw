@@ -1,11 +1,15 @@
 package project.layers;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.nanovg.NVGPaint;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.system.MemoryUtil.*;
@@ -17,20 +21,36 @@ public class ImageLayer implements Layer {
     private float originalWidth, originalHeight;
     private boolean loaded = false;
 
-    public boolean loadFromFile(long nvg, String path) {
-        imageHandle = nvgCreateImage(nvg, path, 0);
-        if (imageHandle != 0) {
+    public boolean loadFromFile(long nvg, String filePath) {
+        try {
+            byte[] fileBytes = Files.readAllBytes(Path.of(filePath));
+            ByteBuffer fileBuffer = BufferUtils.createByteBuffer(fileBytes.length);
+            fileBuffer.put(fileBytes).flip();
+            
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 IntBuffer w = stack.mallocInt(1);
                 IntBuffer h = stack.mallocInt(1);
-                nvgImageSize(nvg, imageHandle, w, h);
-                originalWidth = w.get(0);
-                originalHeight = h.get(0);
-                width = originalWidth;
-                height = originalHeight;
-                loaded = true;
-                return true;
+                IntBuffer comp = stack.mallocInt(1);
+                
+                ByteBuffer imageData = STBImage.stbi_load_from_memory(fileBuffer, w, h, comp, 4);
+                if (imageData != null) {
+                    imageHandle = nvgCreateImageRGBA(nvg, w.get(0), h.get(0), 0, imageData);
+                    STBImage.stbi_image_free(imageData);
+                    
+                    if (imageHandle != 0) {
+                        originalWidth = w.get(0);
+                        originalHeight = h.get(0);
+                        width = originalWidth;
+                        height = originalHeight;
+                        loaded = true;
+                        return true;
+                    }
+                } else {
+                    System.err.println("STB failed to decode image: " + STBImage.stbi_failure_reason());
+                }
             }
+        } catch (IOException e) {
+            System.err.println("Failed to read image file: " + filePath + " - " + e.getMessage());
         }
         return false;
     }

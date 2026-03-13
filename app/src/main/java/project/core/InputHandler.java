@@ -89,16 +89,24 @@ public class InputHandler {
 
         glfwSetKeyCallback(window, (win, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-                toolManager.onKeyPressed(canvas, key);
+                if (colorPanel.isHexFieldFocused()) {
+                    colorPanel.onKeyPressed(key);
+                } else {
+                    toolManager.onKeyPressed(canvas, key);
 
-                if (key == GLFW_KEY_ESCAPE) {
-                    glfwSetWindowShouldClose(window, true);
+                    if (key == GLFW_KEY_ESCAPE) {
+                        glfwSetWindowShouldClose(window, true);
+                    }
                 }
             }
         });
 
         glfwSetCharCallback(window, (win, codepoint) -> {
-            toolManager.onKeyTyped(canvas, (char) codepoint);
+            if (colorPanel.isHexFieldFocused()) {
+                colorPanel.onKeyTyped((char) codepoint);
+            } else {
+                toolManager.onKeyTyped(canvas, (char) codepoint);
+            }
         });
 
         glfwSetWindowSizeCallback(window, (win, width, height) -> {

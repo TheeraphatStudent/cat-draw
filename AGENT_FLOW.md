@@ -239,3 +239,14 @@ When completing a task, update this file by:
 | 2026-03-13 | `ui/TopBar.java` | 3 DONE | CHANGE 3: Upload uses FileDialog instead of drag-drop |
 | 2026-03-13 | `core/InputHandler.java` | 3 DONE | Removed glfwSetDropCallback |
 | 2026-03-13 | `core/Renderer.java` | 3 DONE | Loaded Kanit font variants (regular, medium, semibold, bold, light) |
+| 2026-03-13 | `core/FontRegistry.java` | 3 DONE | NEW: Auto-discover fonts from resources/fonts/ |
+| 2026-03-13 | `layers/ImageLayer.java` | 3 DONE | BUG 1 FIX: Use stbi_load_from_memory for non-ASCII paths |
+| 2026-03-13 | `core/IconRegistry.java` | 3 DONE | BUG 2 FIX: Load icons from resources with fallback support |
+| 2026-03-13 | `core/Renderer.java` | 3 DONE | Added IconRegistry.init(nvg) call |
+| 2026-03-13 | `ui/ColorPanel.java` | 3 DONE | FEATURE 1: Live hex input with validation, paste support, normalization |
+| 2026-03-13 | `core/InputHandler.java` | 3 DONE | Route keyboard to ColorPanel when hex field focused |
+| 2026-03-13 | `tools/BucketTool.java` | 3 DONE | FEATURE 2: Flood fill implementation with iterative queue |
+| 2026-03-13 | `tools/SelectTool.java` | 3 DONE | FEATURE 3: Element drag/reposition for ImageLayers |
+| 2026-03-13 | `tools/ToolManager.java` | 3 DONE | Added BUCKET and SELECT to Tool enum |
+| 2026-03-13 | `ui/Toolbar.java` | 3 DONE | Icon rendering with fallback, active tool indicator strip |
+| 2026-03-13 | `App.java` | 3 DONE | Pass windowWidth to Toolbar.render() |

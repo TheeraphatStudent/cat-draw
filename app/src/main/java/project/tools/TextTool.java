@@ -1,7 +1,10 @@
 package project.tools;
 
 import project.core.Canvas;
+import project.core.FontRegistry;
 import project.layers.DrawLayer;
+
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -13,7 +16,8 @@ public class TextTool {
     private float boxHeight = 30;
     private StringBuilder textBuffer = new StringBuilder();
     private float fontSize = 16.0f;
-    private String fontName = "kanit-medium";
+    private String fontName = "Kanit-Medium";
+    private int currentFontIndex = 0;
     
     private boolean isDraggingHandle = false;
     private int activeHandle = -1;
@@ -136,4 +140,24 @@ public class TextTool {
     public void setFontSize(float size) { this.fontSize = size; }
     public String getFontName() { return fontName; }
     public void setFontName(String name) { this.fontName = name; }
+    
+    public List<String> getAvailableFonts() {
+        return FontRegistry.listFonts();
+    }
+    
+    public void nextFont() {
+        List<String> fonts = FontRegistry.listFonts();
+        if (!fonts.isEmpty()) {
+            currentFontIndex = (currentFontIndex + 1) % fonts.size();
+            fontName = fonts.get(currentFontIndex);
+        }
+    }
+    
+    public void previousFont() {
+        List<String> fonts = FontRegistry.listFonts();
+        if (!fonts.isEmpty()) {
+            currentFontIndex = (currentFontIndex - 1 + fonts.size()) % fonts.size();
+            fontName = fonts.get(currentFontIndex);
+        }
+    }
 }

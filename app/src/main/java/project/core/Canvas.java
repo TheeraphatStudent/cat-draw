@@ -67,4 +67,20 @@ public class Canvas {
     public Renderer getRenderer() {
         return renderer;
     }
+
+    private int lastWidth = 800;
+    private int lastHeight = 600;
+
+    public void setSize(int width, int height) {
+        this.lastWidth = width;
+        this.lastHeight = height;
+    }
+
+    public int getWidth() {
+        return lastWidth;
+    }
+
+    public int getHeight() {
+        return lastHeight;
+    }
 }

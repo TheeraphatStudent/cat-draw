@@ -3,24 +3,12 @@ package project.core;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-
 import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.nanovg.NanoVGGL3.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
     private long nvg;
-    private int fontKanit = -1;
-    private int fontKanitMedium = -1;
-    private int fontKanitSemiBold = -1;
-    private int fontKanitBold = -1;
-    private int fontKanitLight = -1;
-    private int fontRoboto = -1;
     private int windowWidth;
     private int windowHeight;
 
@@ -55,74 +43,8 @@ public class Renderer {
             throw new RuntimeException("Could not init NanoVG");
         }
 
-        loadFonts();
-    }
-
-    private void loadFonts() {
-        fontKanit = loadFontFromResource("/fonts/Kanit/Kanit-Regular.ttf", "kanit");
-        fontKanitMedium = loadFontFromResource("/fonts/Kanit/Kanit-Medium.ttf", "kanit-medium");
-        fontKanitSemiBold = loadFontFromResource("/fonts/Kanit/Kanit-SemiBold.ttf", "kanit-semibold");
-        fontKanitBold = loadFontFromResource("/fonts/Kanit/Kanit-Bold.ttf", "kanit-bold");
-        fontKanitLight = loadFontFromResource("/fonts/Kanit/Kanit-Light.ttf", "kanit-light");
-
-        try {
-            ByteBuffer robotoData = loadResource("/fonts/Roboto-Regular.ttf");
-            if (robotoData != null) {
-                fontRoboto = nvgCreateFontMem(nvg, "roboto", robotoData, false);
-            }
-        } catch (Exception e) {
-            System.err.println("Warning: Could not load Roboto font: " + e.getMessage());
-        }
-
-        if (fontKanit == -1) {
-            fontKanit = nvgCreateFont(nvg, "kanit", "C:/Windows/Fonts/arial.ttf");
-            if (fontKanit == -1) {
-                fontKanit = nvgCreateFont(nvg, "kanit", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
-            }
-        }
-        if (fontKanitMedium == -1) fontKanitMedium = fontKanit;
-        if (fontKanitSemiBold == -1) fontKanitSemiBold = fontKanit;
-        if (fontKanitBold == -1) fontKanitBold = fontKanit;
-        if (fontKanitLight == -1) fontKanitLight = fontKanit;
-        if (fontRoboto == -1) fontRoboto = fontKanit;
-    }
-
-    private int loadFontFromResource(String path, String name) {
-        try {
-            ByteBuffer data = loadResource(path);
-            if (data != null) {
-                return nvgCreateFontMem(nvg, name, data, false);
-            }
-        } catch (Exception e) {
-            System.err.println("Warning: Could not load font " + name + ": " + e.getMessage());
-        }
-        return -1;
-    }
-
-    private ByteBuffer loadResource(String resource) throws IOException {
-        InputStream source = getClass().getResourceAsStream(resource);
-        if (source == null) {
-            return null;
-        }
-
-        try (ReadableByteChannel rbc = Channels.newChannel(source)) {
-            ByteBuffer buffer = MemoryUtil.memAlloc(8 * 1024);
-            while (true) {
-                int bytes = rbc.read(buffer);
-                if (bytes == -1) {
-                    break;
-                }
-                if (buffer.remaining() == 0) {
-                    ByteBuffer newBuffer = MemoryUtil.memAlloc(buffer.capacity() * 2);
-                    buffer.flip();
-                    newBuffer.put(buffer);
-                    MemoryUtil.memFree(buffer);
-                    buffer = newBuffer;
-                }
-            }
-            buffer.flip();
-            return buffer;
-        }
+        FontRegistry.init(nvg);
+        IconRegistry.init(nvg);
     }
 
     public void updateSize(int width, int height) {
@@ -149,14 +71,6 @@ public class Renderer {
 
     public long getNvg() {
         return nvg;
-    }
-
-    public int getFontKanit() {
-        return fontKanit;
-    }
-
-    public int getFontRoboto() {
-        return fontRoboto;
     }
 
     public int getWindowWidth() {

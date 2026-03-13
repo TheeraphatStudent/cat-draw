@@ -7,7 +7,9 @@ public class ToolManager {
         BRUSH,
         ERASER,
         LINE,
-        TEXT
+        TEXT,
+        BUCKET,
+        SELECT
     }
 
     private Tool activeTool = Tool.BRUSH;
@@ -20,12 +22,16 @@ public class ToolManager {
     private EraserTool eraserTool;
     private LineTool lineTool;
     private TextTool textTool;
+    private BucketTool bucketTool;
+    private SelectTool selectTool;
 
     public ToolManager() {
         brushTool = new BrushTool(this);
         eraserTool = new EraserTool(this);
         lineTool = new LineTool(this);
         textTool = new TextTool(this);
+        bucketTool = new BucketTool(this);
+        selectTool = new SelectTool(this);
     }
 
     public void setActiveTool(Tool tool) {
@@ -42,6 +48,8 @@ public class ToolManager {
             case ERASER -> eraserTool.onMouseDown(canvas, x, y);
             case LINE -> lineTool.onMouseDown(canvas, x, y);
             case TEXT -> textTool.onMouseDown(canvas, x, y);
+            case BUCKET -> bucketTool.onMouseDown(canvas, x, y);
+            case SELECT -> selectTool.onMouseDown(canvas, x, y);
         }
     }
 
@@ -51,6 +59,8 @@ public class ToolManager {
             case ERASER -> eraserTool.onMouseDrag(canvas, x, y);
             case LINE -> lineTool.onMouseDrag(canvas, x, y);
             case TEXT -> textTool.onMouseDrag(canvas, x, y);
+            case BUCKET -> bucketTool.onMouseDrag(canvas, x, y);
+            case SELECT -> selectTool.onMouseDrag(canvas, x, y);
         }
     }
 
@@ -60,6 +70,8 @@ public class ToolManager {
             case ERASER -> eraserTool.onMouseUp(canvas, x, y);
             case LINE -> lineTool.onMouseUp(canvas, x, y);
             case TEXT -> textTool.onMouseUp(canvas, x, y);
+            case BUCKET -> bucketTool.onMouseUp(canvas, x, y);
+            case SELECT -> selectTool.onMouseUp(canvas, x, y);
         }
     }
 
@@ -99,4 +111,6 @@ public class ToolManager {
     public EraserTool getEraserTool() { return eraserTool; }
     public LineTool getLineTool() { return lineTool; }
     public TextTool getTextTool() { return textTool; }
+    public BucketTool getBucketTool() { return bucketTool; }
+    public SelectTool getSelectTool() { return selectTool; }
 }

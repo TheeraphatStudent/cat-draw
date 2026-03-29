@@ -20,7 +20,7 @@ public class ImageLayer implements Layer {
     private float width, height;
     private float originalWidth, originalHeight;
     private boolean loaded = false;
-
+    
     public boolean loadFromFile(long nvg, String filePath) {
         try {
             byte[] fileBytes = Files.readAllBytes(Path.of(filePath));
@@ -40,7 +40,7 @@ public class ImageLayer implements Layer {
                     imageHandle = nvgCreateImageRGBA(nvg, imgW, imgH, NVG_IMAGE_GENERATE_MIPMAPS, imageData);
                     STBImage.stbi_image_free(imageData);
                     
-                    if (imageHandle > 0) {
+                    if (imageHandle >= 0) {
                         originalWidth = imgW;
                         originalHeight = imgH;
                         width = originalWidth;

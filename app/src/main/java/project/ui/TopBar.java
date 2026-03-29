@@ -20,7 +20,7 @@ public class TopBar {
     private final Canvas canvas;
     private boolean uploadHovered = false;
     private boolean clearHovered = false;
-
+    private volatile String pendingImagePath = null;
     public TopBar(Renderer renderer, Canvas canvas) {
         this.renderer = renderer;
         this.canvas = canvas;
@@ -99,14 +99,13 @@ public class TopBar {
                 return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg");
             });
             dialog.setVisible(true);
-            
+
             String file = dialog.getFile();
             String dir = dialog.getDirectory();
             dialog.dispose();
-            
+
             if (file != null && dir != null) {
-                String fullPath = dir + file;
-                loadImage(fullPath);
+                pendingImagePath = dir + file; // แค่ save path ไว้ก่อน
             }
         }).start();
     }
@@ -114,11 +113,14 @@ public class TopBar {
     private void loadImage(String path) {
         ImageLayer imageLayer = new ImageLayer();
         long nvg = renderer.getNvg();
-        
+
         if (imageLayer.loadFromFile(nvg, path)) {
-            imageLayer.setPosition(50, 50);
+            int canvasW = canvas.getWidth();
+            int canvasH = canvas.getHeight();
+            imageLayer.setPosition(0, 0);
+            imageLayer.setSize(canvasW, canvasH);
             canvas.addImageLayer(imageLayer);
-            System.out.println("Image loaded: " + path);
+            System.out.println("Image loaded and added: " + path);
         } else {
             System.err.println("Failed to load image: " + path);
         }
@@ -148,4 +150,11 @@ public class TopBar {
     public boolean isInBounds(float mouseX, float mouseY) {
         return mouseY <= HEIGHT;
     }
+    public void update() {
+    String path = pendingImagePath;
+    if (path != null) {
+        pendingImagePath = null;
+        loadImage(path);
+    }
+}
 }

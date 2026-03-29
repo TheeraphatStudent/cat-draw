@@ -119,7 +119,7 @@ public class App {
     private void loop() {
         while (!glfwWindowShouldClose(window)) {
             updateFramebufferSize();
-
+            topBar.update();
             glViewport(0, 0, framebufferWidth, framebufferHeight);
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
